@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>KRAsky - Flota</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-light">
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-plane-up me-2"></i>Flota KRAsky</h2>
+        <div>
+            <a href="/" class="btn btn-secondary me-2">Volver</a>
+            <a href="/web/aviones/nuevo" class="btn btn-info text-white"><i class="fas fa-plus"></i> Nuevo Avión</a>
+        </div>
+    </div>
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <table class="table table-hover">
+                <thead class="table-dark">
+                <tr>
+                    <th>Matrícula</th>
+                    <th>Modelo</th>
+                    <th>Cap. Turista</th>
+                    <th>Cap. Business</th>
+                    <th>Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="a : ${listaAviones}">
+                    <td th:text="${a.matricula}" class="fw-bold"></td>
+                    <td th:text="${a.modelo}"></td>
+                    <td th:text="${a.capacidadTurista}"></td>
+                    <td th:text="${a.capacidadBusiness}"></td>
+                    <td>
+                        <a th:href="@{/web/aviones/editar/{id}(id=${a.id})}" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></a>
+                        <a th:href="@{/web/aviones/eliminar/{id}(id=${a.id})}" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar avión?');"><i class="fas fa-trash"></i></a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Formulario de Vuelo</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0" th:text="${vuelo.id} ? 'Editar Vuelo' : 'Nuevo Vuelo'">Vuelo</h4>
+        </div>
+        <div class="card-body">
+          <form th:action="@{/web/vuelos/guardar}" th:object="${vuelo}" method="post">
+            <input type="hidden" th:field="*{id}" />
+
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Número de Vuelo</label>
+                <input type="text" class="form-control" th:field="*{numeroVuelo}" required placeholder="Ej: IB3001" />
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label">Avión Asignado</label>
+                <select class="form-select" th:field="*{avionId}" required>
+                  <option value="" disabled selected>Seleccione un avión</option>
+                  <option th:each="avion : ${listaAviones}"
+                          th:value="${avion.id}"
+                          th:text="${avion.modelo} + ' (' + ${avion.matricula} + ')'"></option>
+                </select>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label">Origen</label>
+                <input type="text" class="form-control" th:field="*{origen}" required />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Destino</label>
+                <input type="text" class="form-control" th:field="*{destino}" required />
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label">Fecha Salida</label>
+                <input type="datetime-local" class="form-control" th:field="*{fechaSalida}" required />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Fecha Llegada</label>
+                <input type="datetime-local" class="form-control" th:field="*{fechaLlegada}" required />
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label">Precio Turista</label>
+                <div class="input-group">
+                  <span class="input-group-text">€</span>
+                  <input type="number" step="0.01" class="form-control" th:field="*{precioTurista}" required />
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Precio Business</label>
+                <div class="input-group">
+                  <span class="input-group-text">€</span>
+                  <input type="number" step="0.01" class="form-control" th:field="*{precioBusiness}" required />
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Estado</label>
+                <select class="form-select" th:field="*{estado}">
+                  <option value="PROGRAMADO">PROGRAMADO</option>
+                  <option value="EN_VUELO">EN VUELO</option>
+                  <option value="FINALIZADO">FINALIZADO</option>
+                  <option value="CANCELADO">CANCELADO</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="mt-4 text-end">
+              <a href="/web/vuelos" class="btn btn-secondary me-2">Cancelar</a>
+              <button type="submit" class="btn btn-primary">Guardar Vuelo</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
