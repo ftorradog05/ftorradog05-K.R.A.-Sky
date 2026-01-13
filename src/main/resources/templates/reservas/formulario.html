@@ -1,40 +1,48 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <title>KRAsky - Reserva</title>
+  <meta charset="UTF-8">
+  <title>KRAsky | Editor Reserva</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
+    .main-content { padding: 2rem; display: flex; justify-content: center; min-height: 100vh; }
+    .card-form { background: white; border: 1px solid #e2e8f0; border-radius: 8px; width: 100%; max-width: 800px; }
+    .btn-primary-corp { background-color: #0f172a; color: white; border: none; padding: 0.6rem 2rem; }
+  </style>
 </head>
-<body class="bg-light">
-<div class="container mt-5">
-  <div class="card shadow col-md-8 mx-auto">
-    <div class="card-header bg-warning">
-      <h4 class="mb-0">Gestión de Reserva</h4>
+<body>
+<div class="main-content">
+  <div class="card card-form">
+    <div class="card-header bg-white border-bottom p-4">
+      <h5 class="mb-0 fw-bold">Emisión de Billete</h5>
     </div>
-    <div class="card-body">
+    <div class="card-body p-4">
       <form th:action="@{/web/reservas/guardar}" th:object="${reserva}" method="post">
         <input type="hidden" th:field="*{id}" />
 
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            <label>Código Reserva</label>
-            <input type="text" class="form-control" th:field="*{codigoReserva}" required placeholder="SKY..." />
+        <div class="row g-4 mb-4">
+          <div class="col-md-6">
+            <label class="form-label fw-bold small">Código Reserva</label>
+            <input type="text" class="form-control" th:field="*{codigoReserva}" required placeholder="SKY-..." />
           </div>
-          <div class="col-md-6 mb-3">
-            <label>Fecha Reserva</label>
+          <div class="col-md-6">
+            <label class="form-label fw-bold small">Fecha</label>
             <input type="datetime-local" class="form-control" th:field="*{fechaReserva}" required />
           </div>
         </div>
 
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            <label>Vuelo</label>
+        <div class="row g-4 mb-4">
+          <div class="col-md-6">
+            <label class="form-label fw-bold small">Vuelo</label>
             <select class="form-select" th:field="*{vueloId}" required>
               <option value="">Seleccione Vuelo...</option>
-              <option th:each="v : ${listaVuelos}" th:value="${v.id}" th:text="${v.numeroVuelo} + ' - ' + ${v.origen} + ' a ' + ${v.destino}"></option>
+              <option th:each="v : ${listaVuelos}" th:value="${v.id}" th:text="${v.numeroVuelo} + ' (' + ${v.origen} + '-' + ${v.destino} + ')'"></option>
             </select>
           </div>
-          <div class="col-md-6 mb-3">
-            <label>Pasajero</label>
+          <div class="col-md-6">
+            <label class="form-label fw-bold small">Pasajero</label>
             <select class="form-select" th:field="*{pasajeroId}" required>
               <option value="">Seleccione Pasajero...</option>
               <option th:each="p : ${listaPasajeros}" th:value="${p.id}" th:text="${p.nombre} + ' ' + ${p.apellidos}"></option>
@@ -42,37 +50,36 @@
           </div>
         </div>
 
-        <div class="row">
-          <div class="col-md-4 mb-3">
-            <label>Clase</label>
+        <div class="row g-4">
+          <div class="col-md-3">
+            <label class="form-label fw-bold small">Clase</label>
             <select class="form-select" th:field="*{clase}">
               <option value="TURISTA">TURISTA</option>
               <option value="BUSINESS">BUSINESS</option>
             </select>
           </div>
-          <div class="col-md-4 mb-3">
-            <label>Precio</label>
-            <div class="input-group">
-              <span class="input-group-text">€</span>
-              <input type="number" step="0.01" class="form-control" th:field="*{precioTotal}" required />
-            </div>
+          <div class="col-md-3">
+            <label class="form-label fw-bold small">Precio</label>
+            <input type="number" step="0.01" class="form-control" th:field="*{precioTotal}" required />
           </div>
-          <div class="col-md-4 mb-3">
-            <label>Estado</label>
+          <div class="col-md-3">
+            <label class="form-label fw-bold small">Estado</label>
             <select class="form-select" th:field="*{estado}">
               <option value="CONFIRMADA">CONFIRMADA</option>
               <option value="PENDIENTE_PAGO">PENDIENTE</option>
               <option value="CANCELADA">CANCELADA</option>
             </select>
           </div>
+          <div class="col-md-3">
+            <label class="form-label fw-bold small">Asiento</label>
+            <input type="text" class="form-control" th:field="*{asiento}" placeholder="12A" />
+          </div>
         </div>
 
-        <div class="mb-3">
-          <label>Asiento</label>
-          <input type="text" class="form-control" th:field="*{asiento}" placeholder="Ej: 12A" />
+        <div class="d-flex justify-content-between mt-5 pt-3 border-top">
+          <a href="/web/reservas" class="btn btn-outline-secondary">Cancelar</a>
+          <button type="submit" class="btn btn-primary-corp">Confirmar Reserva</button>
         </div>
-
-        <button type="submit" class="btn btn-warning w-100">Guardar Reserva</button>
       </form>
     </div>
   </div>

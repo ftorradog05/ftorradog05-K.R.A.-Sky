@@ -1,46 +1,84 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>KRAsky - Flota</title>
+    <meta charset="UTF-8">
+    <title>KRAsky | Flota</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* REUTILIZAR ESTILOS */
+        :root { --sidebar-bg: #1e293b; --sidebar-width: 260px; --header-height: 60px; }
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; font-size: 0.875rem; }
+        .sidebar { width: var(--sidebar-width); height: 100vh; position: fixed; top: 0; left: 0; background-color: var(--sidebar-bg); color: #94a3b8; display: flex; flex-direction: column; z-index: 1000; }
+        .nav-link { color: #cbd5e1; padding: 0.75rem 1.5rem; display: flex; align-items: center; font-weight: 500; text-decoration: none; }
+        .nav-link.active { background-color: rgba(139, 92, 246, 0.1); border-left: 3px solid #8b5cf6; } /* MORADO para Aviones */
+        .main-content { margin-left: var(--sidebar-width); padding-top: var(--header-height); min-height: 100vh; }
+        .top-header { height: var(--header-height); background: white; border-bottom: 1px solid #e2e8f0; position: fixed; top: 0; right: 0; left: var(--sidebar-width); z-index: 900; display: flex; align-items: center; padding: 0 2rem; justify-content: space-between; }
+        .table-card { background: white; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden; }
+        .table thead th { background-color: #f8fafc; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0; padding: 0.75rem 1.5rem; }
+        .table tbody td { padding: 1rem 1.5rem; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+        .btn-primary-corp { background-color: #0f172a; color: white; border: none; padding: 0.5rem 1.5rem; }
+    </style>
 </head>
-<body class="bg-light">
-<div class="container mt-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2><i class="fas fa-plane-up me-2"></i>Flota KRAsky</h2>
-        <div>
-            <a href="/" class="btn btn-secondary me-2">Volver</a>
-            <a href="/web/aviones/nuevo" class="btn btn-info text-white"><i class="fas fa-plus"></i> Nuevo Avión</a>
+<body>
+<nav class="sidebar">
+    <div class="px-4 py-3 text-white fw-bold border-bottom border-secondary"><i class="fas fa-plane-departure me-2"></i> KRAsky ERP</div>
+    <div class="d-flex flex-column flex-grow-1 py-3">
+        <a href="/" class="nav-link"><i class="fas fa-chart-pie me-2"></i> Dashboard</a>
+        <a href="/web/vuelos" class="nav-link"><i class="fas fa-plane me-2"></i> Gestión Vuelos</a>
+        <a href="/web/reservas" class="nav-link"><i class="fas fa-ticket-alt me-2"></i> Reservas</a>
+        <a href="/web/pasajeros" class="nav-link"><i class="fas fa-users me-2"></i> Base de Clientes</a>
+        <a href="/web/aviones" class="nav-link active"><i class="fas fa-plane-up me-2"></i> Flota Aérea</a>
+    </div>
+</nav>
+
+<header class="top-header">
+    <div class="d-flex align-items-center text-muted"><span class="fw-medium">Recursos / Flota</span></div>
+</header>
+
+<main class="main-content">
+    <div class="container-fluid p-4">
+
+        <div th:if="${mensajeError}" class="alert alert-danger shadow-sm border-0"><i class="fas fa-exclamation-circle me-2"></i><span th:text="${mensajeError}"></span></div>
+        <div th:if="${mensajeExito}" class="alert alert-success shadow-sm border-0"><i class="fas fa-check-circle me-2"></i><span th:text="${mensajeExito}"></span></div>
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="fw-bold text-dark">Gestión de Aeronaves</h4>
+            <a href="/web/aviones/nuevo" class="btn btn-primary-corp"><i class="fas fa-plus me-2"></i>Nueva Aeronave</a>
+        </div>
+
+        <div class="table-card">
+            <div class="table-responsive">
+                <table class="table mb-0 table-hover">
+                    <thead>
+                    <tr>
+                        <th>Matrícula</th>
+                        <th>Modelo</th>
+                        <th>Capacidad Total</th>
+                        <th>Configuración (Turista / Business)</th>
+                        <th class="text-end">Mantenimiento</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="a : ${listaAviones}">
+                        <td><span class="badge bg-dark bg-opacity-10 text-dark border" th:text="${a.matricula}"></span></td>
+                        <td class="fw-bold" th:text="${a.modelo}"></td>
+                        <td th:text="${a.capacidadTurista + a.capacidadBusiness} + ' pax'"></td>
+                        <td class="text-muted">
+                            <span th:text="${a.capacidadTurista}"></span> Turista /
+                            <span th:text="${a.capacidadBusiness}"></span> Business
+                        </td>
+                        <td class="text-end">
+                            <a th:href="@{/web/aviones/editar/{id}(id=${a.id})}" class="btn btn-sm btn-link text-secondary"><i class="fas fa-tools"></i></a>
+                            <a th:href="@{/web/aviones/eliminar/{id}(id=${a.id})}" class="btn btn-sm btn-link text-danger" onclick="return confirm('¿Retirar avión de la flota?');"><i class="fas fa-trash-alt"></i></a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <table class="table table-hover">
-                <thead class="table-dark">
-                <tr>
-                    <th>Matrícula</th>
-                    <th>Modelo</th>
-                    <th>Cap. Turista</th>
-                    <th>Cap. Business</th>
-                    <th>Acciones</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="a : ${listaAviones}">
-                    <td th:text="${a.matricula}" class="fw-bold"></td>
-                    <td th:text="${a.modelo}"></td>
-                    <td th:text="${a.capacidadTurista}"></td>
-                    <td th:text="${a.capacidadBusiness}"></td>
-                    <td>
-                        <a th:href="@{/web/aviones/editar/{id}(id=${a.id})}" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></a>
-                        <a th:href="@{/web/aviones/eliminar/{id}(id=${a.id})}" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar avión?');"><i class="fas fa-trash"></i></a>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
+</main>
 </body>
 </html>
