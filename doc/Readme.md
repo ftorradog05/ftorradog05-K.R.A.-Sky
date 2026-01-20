@@ -18,6 +18,9 @@ El sistema permite la gestión integral de:
 * **Base de Datos de Pasajeros:** Gestión de clientes (CRM).
 * **Emisión de Billetes:** Sistema transaccional de reservas con validaciones complejas.
 
+Puedes navegar por todo el código fuente organizado en el repositorio:
+📂 [Ver Código Fuente Completo](src/main/java/com/krasky/krasky)
+
 ---
 
 ## 🚀 Instalación y Puesta en Marcha
@@ -26,15 +29,15 @@ Sigue estos pasos para desplegar el proyecto en tu entorno local:
 
 1.  **Clonar el repositorio:**
     ```bash
-    git clone [https://github.com/tu-usuario/krasky-erp.git](https://github.com/tu-usuario/krasky-erp.git)
+    git clone [https://github.com/ftorradog05-K.R.A.-Sky/krasky-erp.git](https://github.com/ftorradog05-K.R.A.-Sky/krasky-erp.git)
     ```
 2.  **Base de Datos:**
     * Crea una base de datos en MySQL llamada `krasky`.
-    * Configura tu usuario y contraseña en `src/main/resources/application.properties`.
+    * Configura tu usuario y contraseña en el archivo [`application.properties`](src/main/resources/application.properties).
 3.  **Carga de Datos (Scripts SQL):**
-    * [cite_start]Ejecuta los scripts proporcionados en la carpeta `/sql` para generar las tablas y cargar los datos de prueba (Boeing, Airbus, Vuelos de prueba, etc.)[cite: 433].
+    * Ejecuta los scripts proporcionados en la carpeta [`/sql`](sql) para generar las tablas y cargar los datos de prueba (Boeing, Airbus, Vuelos de prueba, etc.).
 4.  **Ejecución:**
-    * Ejecuta la clase principal `KraSkyApplication.java`.
+    * Ejecuta la clase principal [`KraSkyApplication.java`](src/main/java/com/krasky/krasky/KraSkyApplication.java).
     * Acceso Web: `http://localhost:8080/`
     * Acceso API: `http://localhost:8080/api/`
 
@@ -50,11 +53,10 @@ A continuación se detalla cada módulo funcional, mostrando la integración ent
 ### Interfaz Web (Thymeleaf + Bootstrap 5)
 El punto de entrada es un **Dashboard estilo ERP** profesional. Incluye una barra lateral fija y tarjetas KPI (Key Performance Indicators) que muestran el estado de la aerolínea de un vistazo.
 
-![Dashboard Principal](doc/ejemplo.png)
+![Dashboard Principal](doc/img/WC1.png)
 
 ### Detalles Técnicos
-* **Controlador:** `HomeController.java`
-* **Diseño:** Implementación de Sidebar fijo con CSS personalizado y `fragmentos` de Thymeleaf para reutilizar el menú en todas las páginas.
+La lógica de navegación es gestionada por el controlador [`HomeController.java`](src/main/java/com/krasky/krasky/controller/web/HomeController.java), que renderiza la vista principal [`index.html`](src/main/resources/templates/index.html). El diseño implementa un Sidebar fijo con CSS personalizado y fragmentos de Thymeleaf para reutilizar el menú en todas las páginas.
 </details>
 
 <details>
@@ -63,19 +65,19 @@ El punto de entrada es un **Dashboard estilo ERP** profesional. Incluye una barr
 Módulo encargado de la programación de rutas y asignación de aeronaves.
 
 ### 1. Vista Web
-Tabla interactiva que muestra los vuelos programados. [cite_start]Incluye lógica visual para mostrar **Badges de Estado** con diferentes colores (Programado = Azul, Cancelado = Rojo, etc.)[cite: 425].
+Tabla interactiva definida en [`lista.html`](src/main/resources/templates/vuelos/lista.html) que muestra los vuelos programados. Incluye lógica visual para mostrar **Badges de Estado** con diferentes colores (Programado = Azul, Cancelado = Rojo, etc.). Esta vista es servida por el [`VueloWebController.java`](src/main/java/com/krasky/krasky/controller/web/VueloWebController.java).
 
-![Lista de Vuelos](doc/ejemplo.png)
+![Lista de Vuelos](doc/img/WC2.png)
 
 ### 2. Prueba API REST (Hoppscotch)
-Endpoint: `GET /api/vuelos`
-[cite_start]La API devuelve objetos **DTO** (`VueloDTO`) en lugar de entidades para evitar bucles infinitos y proteger la estructura interna de la base de datos[cite: 179].
+Endpoint: `GET /api/vuelos` gestionado por [`VueloRestController.java`](src/main/java/com/krasky/krasky/controller/rest/VueloRestController.java).
+La API devuelve objetos **DTO** definidos en [`VueloDTO.java`](src/main/java/com/krasky/krasky/dto/VueloDTO.java) en lugar de entidades para evitar bucles infinitos y proteger la estructura interna de la base de datos.
 
-![Prueba API Vuelos](doc/ejemplo.png)
+![Prueba API Vuelos](doc/img/hc1.png)
 
 ### 3. Lógica de Negocio
-* [cite_start]**Relación:** Implementación de `@ManyToOne` donde múltiples vuelos pertenecen a un único avión[cite: 127].
-* **Validación:** Se impide la eliminación de vuelos si tienen reservas activas.
+* **Relación:** Implementación de `@ManyToOne` en la entidad [`Vuelo.java`](src/main/java/com/krasky/krasky/model/Vuelo.java) donde múltiples vuelos pertenecen a un único avión.
+* **Validación:** El servicio [`VueloServiceImpl.java`](src/main/java/com/krasky/krasky/service/impl/VueloServiceImpl.java) gestiona la lógica de fechas y estados, apoyándose en [`VueloRepository.java`](src/main/java/com/krasky/krasky/repository/VueloRepository.java).
 </details>
 
 <details>
@@ -84,21 +86,21 @@ Endpoint: `GET /api/vuelos`
 Este es el módulo más complejo, encargado de vincular Pasajeros con Vuelos y generar la facturación.
 
 ### 1. Interfaz Web
-Formulario de emisión de billetes que valida la disponibilidad en tiempo real.
+Formulario de emisión de billetes en [`formulario.html`](src/main/resources/templates/reservas/formulario.html) que valida la disponibilidad en tiempo real mediante el [`ReservaWebController.java`](src/main/java/com/krasky/krasky/controller/web/ReservaWebController.java).
 
-![Formulario Reservas](doc/ejemplo.png)
+![Formulario Reservas](doc/img/WC3.png)
 
 ### 2. Lógica de Negocio (Service Layer)
-[cite_start]El servicio `ReservaServiceImpl` implementa validaciones críticas[cite: 300]:
+El servicio [`ReservaServiceImpl.java`](src/main/java/com/krasky/krasky/service/impl/ReservaServiceImpl.java) implementa validaciones críticas:
 1.  Verifica que el vuelo y el pasajero existen.
 2.  Calcula el `precioTotal` automáticamente basándose en la clase (Business/Turista).
 3.  Genera un **Código de Reserva Único** (`SKY...`).
 
 ### 3. Prueba API REST
-Endpoint: `POST /api/reservas`
-Ejemplo de creación de una reserva mediante JSON. El sistema devuelve `201 Created` si la operación es exitosa.
+Endpoint: `POST /api/reservas` gestionado por [`ReservaRestController.java`](src/main/java/com/krasky/krasky/controller/rest/ReservaRestController.java).
+Ejemplo de creación de una reserva mediante JSON utilizando el [`ReservaDTO.java`](src/main/java/com/krasky/krasky/dto/ReservaDTO.java).
 
-![Postman Reserva](doc/ejemplo.png)
+![Postman Reserva](doc/img/hc2.png)
 </details>
 
 <details>
@@ -107,12 +109,14 @@ Ejemplo de creación de una reserva mediante JSON. El sistema devuelve `201 Crea
 Gestión de las entidades maestras del sistema.
 
 ### Pasajeros (CRM)
-Base de datos de clientes con validación de **DNI único** y formato de email.
-![Lista Pasajeros](doc/ejemplo.png)
+Base de datos de clientes definida en la entidad [`Pasajero.java`](src/main/java/com/krasky/krasky/model/Pasajero.java) con validación de **DNI único**. La gestión se realiza a través del [`PasajeroRestController.java`](src/main/java/com/krasky/krasky/controller/rest/PasajeroRestController.java) y su contraparte web.
+
+![Lista Pasajeros](doc/img/WC4.png)
 
 ### Flota de Aviones
-Gestión de inventario. [cite_start]Implementa control de **Integridad Referencial**: el sistema captura la excepción si intentas borrar un avión que tiene vuelos asignados y muestra una alerta amigable al usuario en lugar de un error 500[cite: 312].
-![Lista Aviones](doc/ejemplo.png)
+Gestión de inventario de aeronaves (`Avion.java`). Implementa control de **Integridad Referencial** en [`AvionRestController.java`](src/main/java/com/krasky/krasky/controller/rest/AvionRestController.java): el sistema captura la excepción si intentas borrar un avión que tiene vuelos asignados.
+
+![Lista Aviones](doc/img/WC5.png)
 </details>
 
 ---
@@ -121,17 +125,18 @@ Gestión de inventario. [cite_start]Implementa control de **Integridad Referenci
 
 Este proyecto cubre el 100% de los requisitos especificados en el enunciado del Proyecto DAM:
 
-| Fase PDF | Requisito | Estado | Ubicación Principal en Código |
+| Fase PDF | Requisito | Estado | Enlace al Código Principal |
 | :--- | :--- | :---: | :--- |
-| **Fase 1** | Configuración (Maven, MySQL, Estructura) | ✅ | [cite_start]`pom.xml`, `application.properties` [cite: 47] |
-| **Fase 2** | Modelo de Datos (Entidades, Relaciones, Enums) | ✅ | [cite_start]`com.krasky.model` (4 Entidades) [cite: 98] |
-| **Fase 3** | DTOs (Separación de capas) | ✅ | [cite_start]`com.krasky.dto` (4 DTOs) [cite: 178] |
-| **Fase 4** | Repositorios (JPA y @Query) | ✅ | [cite_start]`com.krasky.repository` [cite: 213] |
-| **Fase 5** | Servicios (Lógica de Negocio) | ✅ | [cite_start]`com.krasky.service.impl` [cite: 270] |
-| **Fase 6** | API REST (Controladores y Endpoints) | ✅ | [cite_start]`com.krasky.controller.rest` [cite: 330] |
-| **Fase 7** | Interfaz Web (Thymeleaf + Bootstrap) | ✅ | [cite_start]`templates/`, `controller.web` [cite: 371] |
-| **Fase 8** | Scripts SQL y Datos de Prueba | ✅ | [cite_start]`/sql` (Carga inicial) [cite: 433] |
-| **Extra** | Manejo de Excepciones Global | ✅ | [cite_start]`GlobalExceptionHandler.java` [cite: 317] |
+| **Fase 1** | Configuración (Maven, MySQL, Estructura) | ✅ | [`pom.xml`](pom.xml), [`application.properties`](src/main/resources/application.properties) |
+| **Fase 2** | Modelo de Datos (Entidades, Relaciones, Enums) | ✅ | [`com.krasky.model`](src/main/java/com/krasky/krasky/model) (4 Entidades) |
+| **Fase 3** | DTOs (Separación de capas) | ✅ | [`com.krasky.dto`](src/main/java/com/krasky/krasky/dto) (4 DTOs) |
+| **Fase 4** | Repositorios (JPA y @Query) | ✅ | [`com.krasky.repository`](src/main/java/com/krasky/krasky/repository) |
+| **Fase 5** | Servicios (Lógica de Negocio) | ✅ | [`com.krasky.service.impl`](src/main/java/com/krasky/krasky/service/impl) |
+| **Fase 6** | API REST (Controladores y Endpoints) | ✅ | [`com.krasky.controller.rest`](src/main/java/com/krasky/krasky/controller/rest) |
+| **Fase 7** | Interfaz Web (Thymeleaf + Bootstrap) | ✅ | [`templates/`](src/main/resources/templates), [`controller.web`](src/main/java/com/krasky/krasky/controller/web) |
+| **Fase 8** | Scripts SQL y Datos de Prueba | ✅ | [`/sql`](sql) (Carga inicial) |
+| **Extra** | Manejo de Excepciones Global | ✅ | [`GlobalExceptionHandler.java`](src/main/java/com/krasky/krasky/exception/GlobalExceptionHandler.java) |
+| **Extra** | Documentación de Pruebas API | ✅ | [`doc/hoppscotch.pdf`](doc/hoppscotch.pdf) |
 
 ---
 
@@ -148,6 +153,6 @@ Este proyecto cubre el 100% de los requisitos especificados en el enunciado del 
 
 ### ✒️ Autores
 **Equipo KRAsky - 2º DAM**
-* [Tu Nombre] - Backend & API
-* [Nombre Compañero 1] - Frontend & Diseño
-* [Nombre Compañero 2] - Base de Datos & QA
+* Alberto Jociles Ortega
+* Roberto Hermoso Rejano
+* Francisco Torrado Gonzalez
