@@ -1,77 +1,138 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>KRAsky | Editor Vuelo</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root { --sidebar-bg: #1e293b; --sidebar-width: 260px; --header-height: 60px; }
-    body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; font-size: 0.875rem; }
+    <meta charset="UTF-8">
+    <title>KRAsky | Editor Vuelo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --sidebar-bg: #1e293b; --sidebar-width: 260px; --header-height: 60px; }
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; font-size: 0.875rem; }
 
-    /* SIDEBAR EXACTA */
-    .sidebar { width: var(--sidebar-width); height: 100vh; position: fixed; top: 0; left: 0; background-color: var(--sidebar-bg); color: #94a3b8; border-right: 1px solid rgba(255,255,255,0.05); z-index: 1000; display: flex; flex-direction: column; }
-    .sidebar-brand { height: var(--header-height); display: flex; align-items: center; padding: 0 1.5rem; color: white; font-weight: 700; font-size: 1.25rem; border-bottom: 1px solid rgba(255,255,255,0.1); background-color: rgba(0,0,0,0.1); }
-    .nav-link { color: #cbd5e1; padding: 0.75rem 1.5rem; display: flex; align-items: center; font-weight: 500; transition: all 0.2s; border-left: 3px solid transparent; text-decoration: none; }
-    .nav-link:hover { color: white; background-color: rgba(255,255,255,0.05); }
-    .nav-link.active { color: white; background-color: rgba(59, 130, 246, 0.1); border-left-color: #3b82f6; }
-    .nav-link i { width: 20px; margin-right: 10px; opacity: 0.8; }
-    .sidebar-heading { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; padding: 1.5rem 1.5rem 0.5rem; font-weight: 700; }
+        /* Estilos copiados de tu archivo original */
+        .sidebar { width: var(--sidebar-width); height: 100vh; position: fixed; top: 0; left: 0; background-color: var(--sidebar-bg); color: #94a3b8; border-right: 1px solid rgba(255,255,255,0.05); z-index: 1000; display: flex; flex-direction: column; }
+        .sidebar-brand { height: var(--header-height); display: flex; align-items: center; padding: 0 1.5rem; color: white; font-weight: 700; font-size: 1.25rem; border-bottom: 1px solid rgba(255,255,255,0.1); background-color: rgba(0,0,0,0.1); }
+        .nav-link { color: #cbd5e1; padding: 0.75rem 1.5rem; display: flex; align-items: center; font-weight: 500; transition: all 0.2s; border-left: 3px solid transparent; text-decoration: none; }
+        .nav-link:hover { color: white; background-color: rgba(255,255,255,0.05); }
+        .nav-link.active { color: white; background-color: rgba(59, 130, 246, 0.1); border-left-color: #3b82f6; }
+        .nav-link i { width: 20px; margin-right: 10px; opacity: 0.8; }
+        .sidebar-heading { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; padding: 1.5rem 1.5rem 0.5rem; font-weight: 700; }
 
-    .main-content { margin-left: var(--sidebar-width); padding: 2rem; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-    .card-form { background: white; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); width: 100%; max-width: 800px; }
-    .form-label { font-weight: 600; color: #334155; font-size: 0.8rem; }
-    .btn-primary-corp { background-color: #0f172a; color: white; padding: 0.75rem 2rem; border: none; }
-  </style>
+        .main-content { margin-left: var(--sidebar-width); padding: 2rem; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .card-form { background: white; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); width: 100%; max-width: 800px; }
+        .form-label { font-weight: 600; color: #334155; font-size: 0.8rem; }
+        .btn-primary-corp { background-color: #0f172a; color: white; padding: 0.75rem 2rem; border: none; }
+
+        /* CLASE EXTRA PARA ERRORES */
+        .is-invalid { border-color: #dc3545 !important; }
+        .invalid-feedback { display: block; font-size: 0.75rem; color: #dc3545; margin-top: 0.25rem; }
+    </style>
 </head>
 <body>
 <nav class="sidebar">
-  <div class="sidebar-brand"><i class="fas fa-plane-departure me-2"></i> KRAsky ERP</div>
-  <div class="d-flex flex-column flex-grow-1 py-3">
-    <div class="sidebar-heading">Principal</div>
-    <a href="/" class="nav-link"><i class="fas fa-chart-pie"></i> Dashboard</a>
-    <div class="sidebar-heading">Operaciones</div>
-    <a href="/web/vuelos" class="nav-link active"><i class="fas fa-plane"></i> Gestión Vuelos</a>
-    <a href="/web/reservas" class="nav-link"><i class="fas fa-ticket-alt"></i> Reservas y Billetes</a>
-    <div class="sidebar-heading">Recursos</div>
-    <a href="/web/pasajeros" class="nav-link"><i class="fas fa-users"></i> Base de Clientes</a>
-    <a href="/web/aviones" class="nav-link"><i class="fas fa-plane-up"></i> Flota Aérea</a>
-  </div>
-  <div class="p-3 border-top border-secondary border-opacity-25">
-    <div class="d-flex align-items-center">
-      <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center text-white me-2" style="width: 32px; height: 32px;"><i class="fas fa-user small"></i></div>
-      <div><div class="small text-white">Administrador</div><div class="small text-muted" style="font-size: 0.7rem;">admin@krasky.com</div></div>
+    <div class="sidebar-brand"><i class="fas fa-plane-departure me-2"></i> KRAsky ERP</div>
+    <div class="d-flex flex-column flex-grow-1 py-3">
+        <div class="sidebar-heading">Principal</div>
+        <a href="/" class="nav-link"><i class="fas fa-chart-pie"></i> Dashboard</a>
+        <div class="sidebar-heading">Operaciones</div>
+        <a href="/web/vuelos" class="nav-link active"><i class="fas fa-plane"></i> Gestión Vuelos</a>
+        <a href="/web/reservas" class="nav-link"><i class="fas fa-ticket-alt"></i> Reservas y Billetes</a>
+        <div class="sidebar-heading">Recursos</div>
+        <a href="/web/pasajeros" class="nav-link"><i class="fas fa-users"></i> Base de Clientes</a>
+        <a href="/web/aviones" class="nav-link"><i class="fas fa-plane-up"></i> Flota Aérea</a>
     </div>
-  </div>
 </nav>
 
 <div class="main-content bg-light">
-  <div class="card card-form">
-    <div class="card-header bg-white border-bottom p-4">
-      <h5 class="mb-0 fw-bold text-dark">Detalles del Vuelo</h5>
-    </div>
-    <div class="card-body p-4">
-      <form th:action="@{/web/vuelos/guardar}" th:object="${vuelo}" method="post">
-        <input type="hidden" th:field="*{id}" />
-        <div class="row g-4">
-          <div class="col-md-6"><label class="form-label">Número de Vuelo</label><input type="text" class="form-control" th:field="*{numeroVuelo}" required></div>
-          <div class="col-md-6"><label class="form-label">Avión Asignado</label><select class="form-select" th:field="*{avionId}" required><option th:each="a : ${listaAviones}" th:value="${a.id}" th:text="${a.modelo} + ' (' + ${a.matricula} + ')'"></option></select></div>
-          <div class="col-md-6"><label class="form-label">Origen</label><input type="text" class="form-control" th:field="*{origen}" required></div>
-          <div class="col-md-6"><label class="form-label">Destino</label><input type="text" class="form-control" th:field="*{destino}" required></div>
-          <div class="col-md-6"><label class="form-label">Salida</label><input type="datetime-local" class="form-control" th:field="*{fechaSalida}" required></div>
-          <div class="col-md-6"><label class="form-label">Llegada</label><input type="datetime-local" class="form-control" th:field="*{fechaLlegada}" required></div>
-          <div class="col-md-4"><label class="form-label">Precio Turista</label><input type="number" step="0.01" class="form-control" th:field="*{precioTurista}" required></div>
-          <div class="col-md-4"><label class="form-label">Precio Business</label><input type="number" step="0.01" class="form-control" th:field="*{precioBusiness}" required></div>
-          <div class="col-md-4"><label class="form-label">Estado</label><select class="form-select" th:field="*{estado}"><option value="PROGRAMADO">PROGRAMADO</option><option value="EN_VUELO">EN VUELO</option><option value="FINALIZADO">FINALIZADO</option><option value="CANCELADO">CANCELADO</option></select></div>
+    <div class="card card-form">
+        <div class="card-header bg-white border-bottom p-4">
+            <h5 class="mb-0 fw-bold text-dark">Detalles del Vuelo</h5>
         </div>
-        <div class="d-flex justify-content-between mt-5 pt-3 border-top">
-          <a href="/web/vuelos" class="btn btn-outline-secondary">Cancelar</a>
-          <button type="submit" class="btn btn-primary-corp">Guardar Cambios</button>
+        <div class="card-body p-4">
+            <form th:action="@{/web/vuelos/guardar}" th:object="${vuelo}" method="post">
+                <input type="hidden" th:field="*{id}" />
+
+                <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger">
+                    <p th:each="err : ${#fields.globalErrors()}" th:text="${err}"></p>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <label class="form-label">Número de Vuelo</label>
+                        <input type="text" class="form-control" th:field="*{numeroVuelo}"
+                               th:classappend="${#fields.hasErrors('numeroVuelo')} ? 'is-invalid' : ''">
+                        <span class="invalid-feedback" th:if="${#fields.hasErrors('numeroVuelo')}" th:errors="*{numeroVuelo}"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Avión Asignado</label>
+                        <select class="form-select" th:field="*{avionId}"
+                                th:classappend="${#fields.hasErrors('avionId')} ? 'is-invalid' : ''">
+                            <option th:each="a : ${listaAviones}" th:value="${a.id}" th:text="${a.modelo} + ' (' + ${a.matricula} + ')'"></option>
+                        </select>
+                        <span class="invalid-feedback" th:if="${#fields.hasErrors('avionId')}" th:errors="*{avionId}"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Origen</label>
+                        <input type="text" class="form-control" th:field="*{origen}"
+                               th:classappend="${#fields.hasErrors('origen')} ? 'is-invalid' : ''">
+                        <span class="invalid-feedback" th:if="${#fields.hasErrors('origen')}" th:errors="*{origen}"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Destino</label>
+                        <input type="text" class="form-control" th:field="*{destino}"
+                               th:classappend="${#fields.hasErrors('destino')} ? 'is-invalid' : ''">
+                        <span class="invalid-feedback" th:if="${#fields.hasErrors('destino')}" th:errors="*{destino}"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Salida</label>
+                        <input type="datetime-local" class="form-control" th:field="*{fechaSalida}"
+                               th:classappend="${#fields.hasErrors('fechaSalida')} ? 'is-invalid' : ''">
+                        <span class="invalid-feedback" th:if="${#fields.hasErrors('fechaSalida')}" th:errors="*{fechaSalida}"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Llegada</label>
+                        <input type="datetime-local" class="form-control" th:field="*{fechaLlegada}"
+                               th:classappend="${#fields.hasErrors('fechaLlegada')} ? 'is-invalid' : ''">
+                        <span class="invalid-feedback" th:if="${#fields.hasErrors('fechaLlegada')}" th:errors="*{fechaLlegada}"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Precio Turista</label>
+                        <input type="number" step="0.01" class="form-control" th:field="*{precioTurista}"
+                               th:classappend="${#fields.hasErrors('precioTurista')} ? 'is-invalid' : ''">
+                        <span class="invalid-feedback" th:if="${#fields.hasErrors('precioTurista')}" th:errors="*{precioTurista}"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Precio Business</label>
+                        <input type="number" step="0.01" class="form-control" th:field="*{precioBusiness}"
+                               th:classappend="${#fields.hasErrors('precioBusiness')} ? 'is-invalid' : ''">
+                        <span class="invalid-feedback" th:if="${#fields.hasErrors('precioBusiness')}" th:errors="*{precioBusiness}"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Estado</label>
+                        <select class="form-select" th:field="*{estado}">
+                            <option value="PROGRAMADO">PROGRAMADO</option>
+                            <option value="EN_VUELO">EN VUELO</option>
+                            <option value="FINALIZADO">FINALIZADO</option>
+                            <option value="CANCELADO">CANCELADO</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between mt-5 pt-3 border-top">
+                    <a href="/web/vuelos" class="btn btn-outline-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-primary-corp">Guardar Cambios</button>
+                </div>
+            </form>
         </div>
-      </form>
     </div>
-  </div>
 </div>
 </body>
 </html>

@@ -40,8 +40,9 @@ public class Vuelo {
     @Column(name = "precio_business", nullable = false, precision = 10, scale = 2)
     private BigDecimal precioBusiness;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private String estado;
+    private EstadoVuelo estado;
 
     // --- RELACIÓN CON AVIÓN ---
     // Un vuelo tiene un avión asignado.
