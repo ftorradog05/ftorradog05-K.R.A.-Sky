@@ -34,8 +34,8 @@ Sigue estos pasos para desplegar el proyecto en tu entorno local:
 2.  **Base de Datos:**
     * Crea una base de datos en MySQL llamada `krasky`.
     * Configura tu usuario y contraseña en el archivo [`application.properties`](src/main/resources/application.properties).
-3.  **Carga de Datos (Scripts SQL):**
-    * Ejecuta los scripts proporcionados en la carpeta [`/sql`](sql) para generar las tablas y cargar los datos de prueba (Boeing, Airbus, Vuelos de prueba, etc.).
+3.  **Carga de Datos:**
+    * El proyecto está configurado para generar las tablas automáticamente. Revisa la configuración de Hibernate.
 4.  **Ejecución:**
     * Ejecuta la clase principal [`KraSkyApplication.java`](src/main/java/com/krasky/krasky/KraSkyApplication.java).
     * Acceso Web: `http://localhost:8080/`
@@ -134,7 +134,6 @@ Este proyecto cubre el 100% de los requisitos especificados en el enunciado del 
 | **Fase 5** | Servicios (Lógica de Negocio) | ✅ | [`com.krasky.service.impl`](src/main/java/com/krasky/krasky/service/impl) |
 | **Fase 6** | API REST (Controladores y Endpoints) | ✅ | [`com.krasky.controller.rest`](src/main/java/com/krasky/krasky/controller/rest) |
 | **Fase 7** | Interfaz Web (Thymeleaf + Bootstrap) | ✅ | [`templates/`](src/main/resources/templates), [`controller.web`](src/main/java/com/krasky/krasky/controller/web) |
-| **Fase 8** | Scripts SQL y Datos de Prueba | ✅ | [`/sql`](sql) (Carga inicial) |
 | **Extra** | Manejo de Excepciones Global | ✅ | [`GlobalExceptionHandler.java`](src/main/java/com/krasky/krasky/exception/GlobalExceptionHandler.java) |
 | **Extra** | Documentación de Pruebas API | ✅ | [`doc/hoppscotch.pdf`](doc/hoppscotch.pdf) |
 
