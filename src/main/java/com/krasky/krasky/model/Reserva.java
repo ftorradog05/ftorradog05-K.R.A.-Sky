@@ -24,26 +24,27 @@ public class Reserva {
     @Column(name = "fecha_reserva", nullable = false)
     private LocalDateTime fechaReserva;
 
+    // --- CORRECCIÓN CRÍTICA: USAR ENUM, NO STRING ---
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private String clase; // EJ: "TURISTA", "BUSINESS"
+    private ClaseAsiento clase;
 
     @Column(name = "precio_total", nullable = false, precision = 10, scale = 2)
     private BigDecimal precioTotal;
 
+    // --- CORRECCIÓN CRÍTICA: USAR ENUM, NO STRING ---
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private String estado; // EJ: "CONFIRMADA", "CANCELADA"
+    private EstadoReserva estado;
 
     @Column(length = 10)
     private String asiento;
 
     // --- RELACIONES ---
-
-    // Una reserva pertenece a un Vuelo específico
     @ManyToOne
     @JoinColumn(name = "vuelo_id", nullable = false)
     private Vuelo vuelo;
 
-    // Una reserva pertenece a un Pasajero específico
     @ManyToOne
     @JoinColumn(name = "pasajero_id", nullable = false)
     private Pasajero pasajero;

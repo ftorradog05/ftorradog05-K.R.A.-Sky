@@ -1,12 +1,15 @@
 package com.krasky.krasky.controller.web;
 
 import com.krasky.krasky.dto.ReservaDTO;
+import com.krasky.krasky.exception.BusinessException;
 import com.krasky.krasky.service.PasajeroService;
 import com.krasky.krasky.service.ReservaService;
 import com.krasky.krasky.service.VueloService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
@@ -35,8 +38,23 @@ public class ReservaWebController {
     }
 
     @PostMapping("/guardar")
-    public String guardar(@ModelAttribute ReservaDTO reservaDTO) {
-        reservaService.saveReserva(reservaDTO);
+    public String guardar(@Valid @ModelAttribute("reserva") ReservaDTO reservaDTO, BindingResult result, Model model) {
+        // 1. Validaciones básicas (IDs nulos, clase vacía)
+        if (result.hasErrors()) {
+            cargarListas(model); // IMPORTANTE: Recargar listas si hay error
+            return "reservas/formulario";
+        }
+
+        try {
+            // 2. Intentar guardar (Aquí se valida si el vuelo está lleno o ya salió)
+            reservaService.saveReserva(reservaDTO);
+        } catch (BusinessException e) {
+            // 3. Capturar errores de lógica de negocio
+            result.rejectValue("vueloId", "error.reserva", e.getMessage()); // Asociamos el error al campo vuelo
+            cargarListas(model); // IMPORTANTE: Recargar listas
+            return "reservas/formulario";
+        }
+
         return "redirect:/web/reservas";
     }
 
@@ -52,5 +70,10 @@ public class ReservaWebController {
     public String eliminar(@PathVariable Long id) {
         reservaService.deleteReserva(id);
         return "redirect:/web/reservas";
+    }
+
+    private void cargarListas(Model model) {
+        model.addAttribute("listaVuelos", vueloService.getAllVuelos());
+        model.addAttribute("listaPasajeros", pasajeroService.getAllPasajeros());
     }
 }

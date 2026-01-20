@@ -1,16 +1,18 @@
 package com.krasky.krasky.service.impl;
 
 import com.krasky.krasky.dto.ReservaDTO;
-import com.krasky.krasky.model.Pasajero;
-import com.krasky.krasky.model.Reserva;
-import com.krasky.krasky.model.Vuelo;
+import com.krasky.krasky.exception.BusinessException;
+import com.krasky.krasky.exception.ResourceNotFoundException;
+import com.krasky.krasky.model.*;
 import com.krasky.krasky.repository.PasajeroRepository;
 import com.krasky.krasky.repository.ReservaRepository;
 import com.krasky.krasky.repository.VueloRepository;
 import com.krasky.krasky.service.ReservaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -20,63 +22,109 @@ public class ReservaServiceImpl implements ReservaService {
 
     @Autowired
     private ReservaRepository reservaRepository;
-
     @Autowired
     private VueloRepository vueloRepository;
-
     @Autowired
     private PasajeroRepository pasajeroRepository;
 
-    // Entity -> DTO
+    @Override
+    @Transactional
+    public ReservaDTO saveReserva(ReservaDTO reservaDTO) {
+
+        // 1. Buscar Vuelo y Pasajero
+        Vuelo vuelo = vueloRepository.findById(reservaDTO.getVueloId())
+                .orElseThrow(() -> new ResourceNotFoundException("Vuelo no encontrado"));
+
+        Pasajero pasajero = pasajeroRepository.findById(reservaDTO.getPasajeroId())
+                .orElseThrow(() -> new ResourceNotFoundException("Pasajero no encontrado"));
+
+        // 2. Validar que el vuelo esté PROGRAMADO (Usando el Enum)
+        if (vuelo.getEstado() != EstadoVuelo.PROGRAMADO) {
+            throw new BusinessException("No se puede reservar en un vuelo que no está PROGRAMADO");
+        }
+
+        // 3. Verificar disponibilidad
+        Long reservasActuales = reservaRepository.contarReservasConfirmadas(vuelo.getId());
+
+        // Convertimos el String del DTO al Enum para comparar o asignar
+        // OJO: Asumimos que el DTO trae "TURISTA" o "BUSINESS" en texto
+        int capacidad;
+        if ("BUSINESS".equalsIgnoreCase(reservaDTO.getClase())) {
+            capacidad = vuelo.getAvion().getCapacidadBusiness();
+        } else {
+            capacidad = vuelo.getAvion().getCapacidadTurista();
+        }
+
+        if (reservasActuales >= capacidad) {
+            throw new BusinessException("El vuelo está lleno");
+        }
+
+        // 4. Crear/Editar Reserva
+        Reserva reserva = new Reserva();
+
+        if (reservaDTO.getId() != null) {
+            reserva = reservaRepository.findById(reservaDTO.getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Reserva no encontrada"));
+        } else {
+            reserva.setCodigoReserva("SKY" + System.currentTimeMillis());
+            reserva.setFechaReserva(LocalDateTime.now());
+            // CORRECCIÓN AQUÍ: Usamos el Enum, no un String
+            reserva.setEstado(EstadoReserva.CONFIRMADA);
+        }
+
+        reserva.setPasajero(pasajero);
+        reserva.setVuelo(vuelo);
+
+        // CORRECCIÓN AQUÍ: Convertimos el String del DTO al Enum ClaseAsiento
+        try {
+            reserva.setClase(ClaseAsiento.valueOf(reservaDTO.getClase()));
+        } catch (IllegalArgumentException | NullPointerException e) {
+            throw new BusinessException("Clase inválida. Debe ser TURISTA o BUSINESS");
+        }
+
+        reserva.setAsiento(reservaDTO.getAsiento());
+
+        // 5. Calcular precio
+        if (reserva.getClase() == ClaseAsiento.BUSINESS) {
+            reserva.setPrecioTotal(vuelo.getPrecioBusiness());
+        } else {
+            reserva.setPrecioTotal(vuelo.getPrecioTurista());
+        }
+
+        Reserva saved = reservaRepository.save(reserva);
+        return convertToDTO(saved);
+    }
+
+    // --- MÉTODOS AUXILIARES ---
+
     private ReservaDTO convertToDTO(Reserva reserva) {
         ReservaDTO dto = new ReservaDTO();
         dto.setId(reserva.getId());
         dto.setCodigoReserva(reserva.getCodigoReserva());
         dto.setFechaReserva(reserva.getFechaReserva());
-        dto.setClase(reserva.getClase());
+
+        // Convertimos Enum a String para el DTO
+        if (reserva.getClase() != null) dto.setClase(reserva.getClase().name());
+        if (reserva.getEstado() != null) dto.setEstado(reserva.getEstado().name());
+
         dto.setPrecioTotal(reserva.getPrecioTotal());
-        dto.setEstado(reserva.getEstado());
         dto.setAsiento(reserva.getAsiento());
 
         if (reserva.getVuelo() != null) {
             dto.setVueloId(reserva.getVuelo().getId());
+            dto.setVueloNumero(reserva.getVuelo().getNumeroVuelo()); // Info extra
         }
         if (reserva.getPasajero() != null) {
             dto.setPasajeroId(reserva.getPasajero().getId());
+            dto.setPasajeroNombre(reserva.getPasajero().getNombre() + " " + reserva.getPasajero().getApellidos()); // Info extra
         }
+
         return dto;
-    }
-
-    // DTO -> Entity
-    private Reserva convertToEntity(ReservaDTO dto) {
-        Reserva reserva = new Reserva();
-        reserva.setId(dto.getId());
-        reserva.setCodigoReserva(dto.getCodigoReserva());
-        reserva.setFechaReserva(dto.getFechaReserva());
-        reserva.setClase(dto.getClase());
-        reserva.setPrecioTotal(dto.getPrecioTotal());
-        reserva.setEstado(dto.getEstado());
-        reserva.setAsiento(dto.getAsiento());
-
-        // Buscamos Vuelo y Pasajero por ID
-        if (dto.getVueloId() != null) {
-            Vuelo vuelo = vueloRepository.findById(dto.getVueloId()).orElse(null);
-            reserva.setVuelo(vuelo);
-        }
-        if (dto.getPasajeroId() != null) {
-            Pasajero pasajero = pasajeroRepository.findById(dto.getPasajeroId()).orElse(null);
-            reserva.setPasajero(pasajero);
-        }
-
-        return reserva;
     }
 
     @Override
     public List<ReservaDTO> getAllReservas() {
-        return reservaRepository.findAll()
-                .stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+        return reservaRepository.findAll().stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
     @Override
@@ -85,14 +133,13 @@ public class ReservaServiceImpl implements ReservaService {
     }
 
     @Override
-    public ReservaDTO saveReserva(ReservaDTO reservaDTO) {
-        Reserva reserva = convertToEntity(reservaDTO);
-        Reserva saved = reservaRepository.save(reserva);
-        return convertToDTO(saved);
-    }
-
-    @Override
     public void deleteReserva(Long id) {
-        reservaRepository.deleteById(id);
+        // En lugar de borrar, lo ideal es CANCELAR
+        Reserva reserva = reservaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Reserva no encontrada"));
+
+        // CORRECCIÓN: Usar Enum
+        reserva.setEstado(EstadoReserva.CANCELADA);
+        reservaRepository.save(reserva);
     }
 }

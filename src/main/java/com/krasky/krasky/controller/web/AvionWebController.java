@@ -1,10 +1,13 @@
 package com.krasky.krasky.controller.web;
 
 import com.krasky.krasky.dto.AvionDTO;
+import com.krasky.krasky.exception.BusinessException;
 import com.krasky.krasky.service.AvionService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
@@ -27,8 +30,21 @@ public class AvionWebController {
     }
 
     @PostMapping("/guardar")
-    public String guardarAvion(@ModelAttribute AvionDTO avionDTO) {
-        avionService.saveAvion(avionDTO);
+    public String guardarAvion(@Valid @ModelAttribute("avion") AvionDTO avionDTO, BindingResult result, Model model) {
+        // 1. Validaciones de formato (@NotBlank, @Min capacidad)
+        if (result.hasErrors()) {
+            return "aviones/formulario";
+        }
+
+        try {
+            // 2. Intentar guardar
+            avionService.saveAvion(avionDTO);
+        } catch (BusinessException e) {
+            // 3. Capturar error de negocio (Matrícula duplicada)
+            result.rejectValue("matricula", "error.avion", e.getMessage());
+            return "aviones/formulario";
+        }
+
         return "redirect:/web/aviones";
     }
 

@@ -2,6 +2,7 @@ package com.krasky.krasky.controller.rest;
 
 import com.krasky.krasky.dto.VueloDTO;
 import com.krasky.krasky.service.VueloService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +29,7 @@ public class VueloRestController {
     }
 
     @PostMapping
-    public ResponseEntity<VueloDTO> createVuelo(@RequestBody VueloDTO vueloDTO) {
+    public ResponseEntity<VueloDTO> createVuelo(@Valid @RequestBody VueloDTO vueloDTO) {
         return ResponseEntity.ok(vueloService.saveVuelo(vueloDTO));
     }
 

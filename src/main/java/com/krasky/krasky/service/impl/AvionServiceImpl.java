@@ -1,6 +1,8 @@
 package com.krasky.krasky.service.impl;
 
 import com.krasky.krasky.dto.AvionDTO;
+import com.krasky.krasky.exception.BusinessException;
+import com.krasky.krasky.exception.ResourceNotFoundException;
 import com.krasky.krasky.model.Avion;
 import com.krasky.krasky.repository.AvionRepository;
 import com.krasky.krasky.service.AvionService;
@@ -17,7 +19,6 @@ public class AvionServiceImpl implements AvionService {
     @Autowired
     private AvionRepository avionRepository;
 
-    // Convertir de Entidad a DTO
     private AvionDTO convertToDTO(Avion avion) {
         AvionDTO dto = new AvionDTO();
         dto.setId(avion.getId());
@@ -28,7 +29,6 @@ public class AvionServiceImpl implements AvionService {
         return dto;
     }
 
-    // Convertir de DTO a Entidad
     private Avion convertToEntity(AvionDTO dto) {
         Avion avion = new Avion();
         avion.setId(dto.getId());
@@ -41,8 +41,7 @@ public class AvionServiceImpl implements AvionService {
 
     @Override
     public List<AvionDTO> getAllAviones() {
-        return avionRepository.findAll()
-                .stream()
+        return avionRepository.findAll().stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
@@ -54,13 +53,31 @@ public class AvionServiceImpl implements AvionService {
 
     @Override
     public AvionDTO saveAvion(AvionDTO avionDTO) {
+        // VALIDACIÓN: Matrícula única
+        // Si es nuevo (id null) O si estamos editando y la matrícula cambió
+        if (avionDTO.getId() == null) {
+            if (avionRepository.findByMatricula(avionDTO.getMatricula()).isPresent()) {
+                throw new BusinessException("Ya existe un avión con la matrícula " + avionDTO.getMatricula());
+            }
+        } else {
+            // Caso editar: comprobar si existe otro avión con esa matrícula que no sea este mismo
+            Optional<Avion> existente = avionRepository.findByMatricula(avionDTO.getMatricula());
+            if (existente.isPresent() && !existente.get().getId().equals(avionDTO.getId())) {
+                throw new BusinessException("La matrícula " + avionDTO.getMatricula() + " ya está en uso por otro avión");
+            }
+        }
+
         Avion avion = convertToEntity(avionDTO);
-        Avion savedAvion = avionRepository.save(avion);
-        return convertToDTO(savedAvion);
+        Avion saved = avionRepository.save(avion);
+        return convertToDTO(saved);
     }
 
     @Override
     public void deleteAvion(Long id) {
+        if (!avionRepository.existsById(id)) {
+            throw new ResourceNotFoundException("No se puede eliminar: El avión no existe");
+        }
+        // Aquí podrías validar si el avión tiene vuelos asignados antes de borrar
         avionRepository.deleteById(id);
     }
 }
