@@ -121,6 +121,30 @@ Gestión de inventario de aeronaves (`Avion.java`). Implementa control de **Inte
 ![Lista Aviones](doc/img/WC5.png)
 </details>
 
+<details>
+<summary><strong>🛡️ 5. Control de Errores y Validaciones (Seguridad)</strong></summary>
+
+Para garantizar la robustez del sistema y cumplir con la Fase 6 del proyecto, se ha implementado una capa transversal de manejo de excepciones que intercepta los fallos antes de llegar al cliente.
+
+### 1. Manejador Global (GlobalExceptionHandler)
+Se utiliza la anotación `@RestControllerAdvice` en la clase [`GlobalExceptionHandler.java`](src/main/java/com/krasky/krasky/exception/GlobalExceptionHandler.java) para capturar excepciones específicas en toda la aplicación:
+* **`ResourceNotFoundException`:** Devuelve **404 Not Found** cuando no se encuentra un ID (vuelo, pasajero, etc.).
+* **`BusinessException`:** Devuelve **400 Bad Request** cuando se viola una regla de negocio (ej: intentar reservar en un vuelo lleno, duplicar un DNI o matrícula).
+* **`MethodArgumentNotValidException`:** Captura errores de validación de los DTOs (ej: precio negativo, campos vacíos).
+
+### 2. Respuesta API Estandarizada
+En lugar de devolver trazas de error de Java (Stack Traces), la API devuelve respuestas JSON limpias y comprensibles para el cliente:
+
+**Ejemplo de respuesta ante un error de validación:**
+```json
+{
+  "precioTurista": "El precio debe ser mayor a 0",
+  "fechaSalida": "La fecha de salida debe ser en el futuro",
+  "numeroVuelo": "El número de vuelo es obligatorio"
+}
+```
+</details>
+
 ---
 
 ## ✅ Tabla de Cumplimiento de Requisitos
