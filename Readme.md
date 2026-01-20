@@ -143,6 +143,8 @@ En lugar de devolver trazas de error de Java (Stack Traces), la API devuelve res
   "numeroVuelo": "El número de vuelo es obligatorio"
 }
 ```
+![Excepciones](doc/img/WCException.png)
+
 </details>
 
 ---
