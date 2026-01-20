@@ -73,7 +73,7 @@ Tabla interactiva definida en [`lista.html`](src/main/resources/templates/vuelos
 Endpoint: `GET /api/vuelos` gestionado por [`VueloRestController.java`](src/main/java/com/krasky/krasky/controller/rest/VueloRestController.java).
 La API devuelve objetos **DTO** definidos en [`VueloDTO.java`](src/main/java/com/krasky/krasky/dto/VueloDTO.java) en lugar de entidades para evitar bucles infinitos y proteger la estructura interna de la base de datos.
 
-![Prueba API Vuelos](doc/img/hc1.png)
+![Prueba API Vuelos](doc/img/hc4.png)
 
 ### 3. Lógica de Negocio
 * **Relación:** Implementación de `@ManyToOne` en la entidad [`Vuelo.java`](src/main/java/com/krasky/krasky/model/Vuelo.java) donde múltiples vuelos pertenecen a un único avión.
@@ -98,9 +98,11 @@ El servicio [`ReservaServiceImpl.java`](src/main/java/com/krasky/krasky/service/
 
 ### 3. Prueba API REST
 Endpoint: `POST /api/reservas` gestionado por [`ReservaRestController.java`](src/main/java/com/krasky/krasky/controller/rest/ReservaRestController.java).
-Ejemplo de creación de una reserva mediante JSON utilizando el [`ReservaDTO.java`](src/main/java/com/krasky/krasky/dto/ReservaDTO.java).
+Ejemplo de borrado de una reserva mediante JSON utilizando el [`ReservaDTO.java`](src/main/java/com/krasky/krasky/dto/ReservaDTO.java).
 
-![Postman Reserva](doc/img/hc2.png)
+![Postman Reserva](doc/img/hc5.png)
+![Postman Reserva](doc/img/hc6.png)
+
 </details>
 
 <details>
