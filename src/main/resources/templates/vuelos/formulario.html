@@ -7,19 +7,12 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --sidebar-bg: #1e293b; --sidebar-width: 260px; --header-height: 60px; }
+        :root { --header-height: 60px; }
         body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; font-size: 0.875rem; }
 
-        /* Estilos copiados de tu archivo original */
-        .sidebar { width: var(--sidebar-width); height: 100vh; position: fixed; top: 0; left: 0; background-color: var(--sidebar-bg); color: #94a3b8; border-right: 1px solid rgba(255,255,255,0.05); z-index: 1000; display: flex; flex-direction: column; }
-        .sidebar-brand { height: var(--header-height); display: flex; align-items: center; padding: 0 1.5rem; color: white; font-weight: 700; font-size: 1.25rem; border-bottom: 1px solid rgba(255,255,255,0.1); background-color: rgba(0,0,0,0.1); }
-        .nav-link { color: #cbd5e1; padding: 0.75rem 1.5rem; display: flex; align-items: center; font-weight: 500; transition: all 0.2s; border-left: 3px solid transparent; text-decoration: none; }
-        .nav-link:hover { color: white; background-color: rgba(255,255,255,0.05); }
-        .nav-link.active { color: white; background-color: rgba(59, 130, 246, 0.1); border-left-color: #3b82f6; }
-        .nav-link i { width: 20px; margin-right: 10px; opacity: 0.8; }
-        .sidebar-heading { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; padding: 1.5rem 1.5rem 0.5rem; font-weight: 700; }
+        /* Ajustado: margin: 0 para que ocupe el centro sin dejar hueco a la izquierda */
+        .main-content { margin: 0; padding: 2rem; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
 
-        .main-content { margin-left: var(--sidebar-width); padding: 2rem; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
         .card-form { background: white; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); width: 100%; max-width: 800px; }
         .form-label { font-weight: 600; color: #334155; font-size: 0.8rem; }
         .btn-primary-corp { background-color: #0f172a; color: white; padding: 0.75rem 2rem; border: none; }
@@ -30,19 +23,6 @@
     </style>
 </head>
 <body>
-<nav class="sidebar">
-    <div class="sidebar-brand"><i class="fas fa-plane-departure me-2"></i> KRAsky ERP</div>
-    <div class="d-flex flex-column flex-grow-1 py-3">
-        <div class="sidebar-heading">Principal</div>
-        <a href="/" class="nav-link"><i class="fas fa-chart-pie"></i> Dashboard</a>
-        <div class="sidebar-heading">Operaciones</div>
-        <a href="/web/vuelos" class="nav-link active"><i class="fas fa-plane"></i> Gestión Vuelos</a>
-        <a href="/web/reservas" class="nav-link"><i class="fas fa-ticket-alt"></i> Reservas y Billetes</a>
-        <div class="sidebar-heading">Recursos</div>
-        <a href="/web/pasajeros" class="nav-link"><i class="fas fa-users"></i> Base de Clientes</a>
-        <a href="/web/aviones" class="nav-link"><i class="fas fa-plane-up"></i> Flota Aérea</a>
-    </div>
-</nav>
 
 <div class="main-content bg-light">
     <div class="card card-form">
