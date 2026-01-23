@@ -19,6 +19,6 @@ public interface VueloRepository extends JpaRepository<Vuelo, Long> {
     List<Vuelo> findByAvionId(Long avionId);
 
     // Consulta personalizada para buscar vuelos disponibles (Programados y fecha futura)
-    @Query("SELECT v FROM Vuelo v WHERE v.estado = 'PROGRAMADO'")
+    @Query("SELECT v FROM Vuelo v WHERE v.estado = 'PROGRAMADO' AND v.fechaSalida > :ahora")
     List<Vuelo> buscarVuelosDisponibles(@Param("ahora") LocalDateTime ahora);
 }
