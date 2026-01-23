@@ -174,7 +174,7 @@ public class VueloServiceImpl implements VueloService {
     @Override
     public List<VueloDTO> getVuelosDisponibles() {
         // Usamos LocalDateTime.now() para filtrar solo los futuros
-        return vueloRepository.buscarVuelosDisponibles()
+        return vueloRepository.buscarVuelosDisponibles(java.time.LocalDateTime.now())
                 .stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
