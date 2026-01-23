@@ -38,4 +38,15 @@ public class ReservaRestController {
         reservaService.deleteReserva(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/codigo/{codigo}")
+    public ResponseEntity<ReservaDTO> getReservaByCodigo(@PathVariable String codigo) {
+        return ResponseEntity.ok(reservaService.getReservaByCodigo(codigo));
+    }
+
+    // 2. Buscar Reservas de un Pasajero (ej: /api/reservas/pasajero/1)
+    @GetMapping("/pasajero/{pasajeroId}")
+    public ResponseEntity<List<ReservaDTO>> getReservasByPasajero(@PathVariable Long pasajeroId) {
+        return ResponseEntity.ok(reservaService.getReservasByPasajeroId(pasajeroId));
+    }
 }

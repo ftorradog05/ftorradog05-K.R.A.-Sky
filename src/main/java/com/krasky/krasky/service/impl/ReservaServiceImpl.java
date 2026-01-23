@@ -142,4 +142,24 @@ public class ReservaServiceImpl implements ReservaService {
         reserva.setEstado(EstadoReserva.CANCELADA);
         reservaRepository.save(reserva);
     }
+
+    @Override
+    public ReservaDTO getReservaByCodigo(String codigo) {
+        Reserva reserva = reservaRepository.findByCodigoReserva(codigo)
+                .orElseThrow(() -> new ResourceNotFoundException("No se encontró reserva con código: " + codigo));
+        return convertToDTO(reserva);
+    }
+
+    @Override
+    public List<ReservaDTO> getReservasByPasajeroId(Long pasajeroId) {
+        // Primero verificamos si el pasajero existe para dar un error más claro
+        if (!pasajeroRepository.existsById(pasajeroId)) {
+            throw new ResourceNotFoundException("No existe el pasajero con ID: " + pasajeroId);
+        }
+
+        return reservaRepository.findByPasajeroId(pasajeroId)
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
 }
