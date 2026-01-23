@@ -86,4 +86,10 @@ public class PasajeroServiceImpl implements PasajeroService {
         }
         pasajeroRepository.deleteById(id);
     }
+
+    @Override
+    public Optional<PasajeroDTO> getPasajeroByDni(String dni) {
+        return pasajeroRepository.findByDni(dni)
+                .map(this::convertToDTO);
+    }
 }
