@@ -38,4 +38,21 @@ public class VueloRestController {
         vueloService.deleteVuelo(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<VueloDTO> updateVuelo(@PathVariable Long id, @Valid @RequestBody VueloDTO vueloDTO) {
+        return ResponseEntity.ok(vueloService.updateVuelo(id, vueloDTO));
+    }
+
+    @GetMapping("/disponibles")
+    public ResponseEntity<List<VueloDTO>> getVuelosDisponibles() {
+        return ResponseEntity.ok(vueloService.getVuelosDisponibles());
+    }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<List<VueloDTO>> buscarVuelos(
+            @RequestParam String origen,
+            @RequestParam String destino) {
+        return ResponseEntity.ok(vueloService.buscarPorOrigenYDestino(origen, destino));
+    }
 }
