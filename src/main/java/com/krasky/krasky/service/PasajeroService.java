@@ -10,4 +10,5 @@ public interface PasajeroService {
     PasajeroDTO savePasajero(PasajeroDTO pasajeroDTO);
     void deletePasajero(Long id);
     Optional<PasajeroDTO> getPasajeroByDni(String dni);
+    PasajeroDTO updatePasajero(Long id, PasajeroDTO pasajeroDTO);
 }

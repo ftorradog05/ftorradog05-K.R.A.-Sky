@@ -80,4 +80,29 @@ public class AvionServiceImpl implements AvionService {
         // Aquí podrías validar si el avión tiene vuelos asignados antes de borrar
         avionRepository.deleteById(id);
     }
+
+    @Override
+    public AvionDTO updateAvion(Long id, AvionDTO avionDTO) {
+        // 1. Buscar el avión existente
+        Avion avionExistente = avionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Avión no encontrado con ID: " + id));
+
+        // 2. Validación de Matrícula única
+        // Solo verificamos si la matrícula ha cambiado con respecto a la que ya tenía
+        if (!avionExistente.getMatricula().equals(avionDTO.getMatricula())) {
+            if (avionRepository.findByMatricula(avionDTO.getMatricula()).isPresent()) {
+                throw new BusinessException("Ya existe otro avión con la matrícula " + avionDTO.getMatricula());
+            }
+        }
+
+        // 3. Actualizar campos
+        avionExistente.setMatricula(avionDTO.getMatricula());
+        avionExistente.setModelo(avionDTO.getModelo());
+        avionExistente.setCapacidadTurista(avionDTO.getCapacidadTurista());
+        avionExistente.setCapacidadBusiness(avionDTO.getCapacidadBusiness());
+
+        // 4. Guardar
+        Avion actualizado = avionRepository.save(avionExistente);
+        return convertToDTO(actualizado);
+    }
 }

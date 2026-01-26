@@ -47,4 +47,9 @@ public class PasajeroRestController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<PasajeroDTO> updatePasajero(@PathVariable Long id, @Valid @RequestBody PasajeroDTO pasajeroDTO) {
+        return ResponseEntity.ok(pasajeroService.updatePasajero(id, pasajeroDTO));
+    }
 }

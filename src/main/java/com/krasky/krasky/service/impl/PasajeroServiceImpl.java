@@ -92,4 +92,37 @@ public class PasajeroServiceImpl implements PasajeroService {
         return pasajeroRepository.findByDni(dni)
                 .map(this::convertToDTO);
     }
+
+    @Override
+    public PasajeroDTO updatePasajero(Long id, PasajeroDTO pasajeroDTO) {
+        // 1. Buscar pasajero existente
+        Pasajero pasajeroExistente = pasajeroRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Pasajero no encontrado con ID: " + id));
+
+        // 2. Validación DNI único (Si cambió)
+        if (!pasajeroExistente.getDni().equals(pasajeroDTO.getDni())) {
+            if (pasajeroRepository.findByDni(pasajeroDTO.getDni()).isPresent()) {
+                throw new BusinessException("Ya existe otro pasajero con el DNI " + pasajeroDTO.getDni());
+            }
+        }
+
+        // 3. Validación Email único (Si cambió)
+        if (!pasajeroExistente.getEmail().equals(pasajeroDTO.getEmail())) {
+            if (pasajeroRepository.findByEmail(pasajeroDTO.getEmail()).isPresent()) {
+                throw new BusinessException("Ya existe otro pasajero con el email " + pasajeroDTO.getEmail());
+            }
+        }
+
+        // 4. Actualizar campos
+        pasajeroExistente.setNombre(pasajeroDTO.getNombre());
+        pasajeroExistente.setApellidos(pasajeroDTO.getApellidos());
+        pasajeroExistente.setDni(pasajeroDTO.getDni());
+        pasajeroExistente.setEmail(pasajeroDTO.getEmail());
+        pasajeroExistente.setTelefono(pasajeroDTO.getTelefono());
+        pasajeroExistente.setFechaNacimiento(pasajeroDTO.getFechaNacimiento());
+
+        // 5. Guardar
+        Pasajero actualizado = pasajeroRepository.save(pasajeroExistente);
+        return convertToDTO(actualizado);
+    }
 }
