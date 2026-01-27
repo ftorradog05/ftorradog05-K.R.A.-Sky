@@ -9,4 +9,5 @@ public interface AvionService {
     Optional<AvionDTO> getAvionById(Long id);
     AvionDTO saveAvion(AvionDTO avionDTO);
     void deleteAvion(Long id);
+    AvionDTO updateAvion(Long id, AvionDTO avionDTO);
 }

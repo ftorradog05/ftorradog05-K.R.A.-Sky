@@ -9,4 +9,6 @@ public interface ReservaService {
     Optional<ReservaDTO> getReservaById(Long id);
     ReservaDTO saveReserva(ReservaDTO reservaDTO);
     void deleteReserva(Long id);
+    ReservaDTO getReservaByCodigo(String codigo);
+    List<ReservaDTO> getReservasByPasajeroId(Long pasajeroId);
 }

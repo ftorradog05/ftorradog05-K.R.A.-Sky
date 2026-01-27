@@ -122,4 +122,69 @@ public class VueloServiceImpl implements VueloService {
         }
         vueloRepository.deleteById(id);
     }
+
+    @Override
+    public VueloDTO updateVuelo(Long id, VueloDTO vueloDTO) {
+        // 1. Buscar el vuelo existente en la base de datos
+        Vuelo vueloExistente = vueloRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("No se encontró el vuelo con ID: " + id));
+
+        // 2. Validación de negocio: Si el número de vuelo cambia, verificar que no esté ocupado por otro
+        if (!vueloExistente.getNumeroVuelo().equals(vueloDTO.getNumeroVuelo())) {
+            if (vueloRepository.findByNumeroVuelo(vueloDTO.getNumeroVuelo()).isPresent()) {
+                throw new BusinessException("Ya existe otro vuelo con el número " + vueloDTO.getNumeroVuelo());
+            }
+        }
+
+        // 3. Validación de fechas
+        if (vueloDTO.getFechaLlegada().isBefore(vueloDTO.getFechaSalida())) {
+            throw new BusinessException("La fecha de llegada no puede ser anterior a la de salida");
+        }
+
+        // 4. Actualizar campos simples
+        vueloExistente.setNumeroVuelo(vueloDTO.getNumeroVuelo());
+        vueloExistente.setOrigen(vueloDTO.getOrigen());
+        vueloExistente.setDestino(vueloDTO.getDestino());
+        vueloExistente.setFechaSalida(vueloDTO.getFechaSalida());
+        vueloExistente.setFechaLlegada(vueloDTO.getFechaLlegada());
+        vueloExistente.setPrecioTurista(vueloDTO.getPrecioTurista());
+        vueloExistente.setPrecioBusiness(vueloDTO.getPrecioBusiness());
+
+        // 5. Actualizar Estado (String -> Enum)
+        try {
+            if (vueloDTO.getEstado() != null) {
+                vueloExistente.setEstado(EstadoVuelo.valueOf(vueloDTO.getEstado()));
+            }
+        } catch (IllegalArgumentException e) {
+            throw new BusinessException("Estado de vuelo inválido: " + vueloDTO.getEstado());
+        }
+
+        // 6. Actualizar Avión (si cambió)
+        if (vueloDTO.getAvionId() != null) {
+            Avion avion = avionRepository.findById(vueloDTO.getAvionId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Avión no encontrado con ID: " + vueloDTO.getAvionId()));
+            vueloExistente.setAvion(avion);
+        }
+
+        // 7. Guardar cambios
+        Vuelo vueloActualizado = vueloRepository.save(vueloExistente);
+        return convertToDTO(vueloActualizado);
+    }
+
+    @Override
+    public List<VueloDTO> getVuelosDisponibles() {
+        // Usamos LocalDateTime.now() para filtrar solo los futuros
+        return vueloRepository.buscarVuelosDisponibles(java.time.LocalDateTime.now())
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<VueloDTO> buscarPorOrigenYDestino(String origen, String destino) {
+        return vueloRepository.findByOrigenAndDestino(origen, destino)
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
 }

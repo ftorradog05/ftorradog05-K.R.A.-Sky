@@ -13,6 +13,7 @@ import java.util.Optional;
 public interface ReservaRepository extends JpaRepository<Reserva, Long> {
     Optional<Reserva> findByCodigoReserva(String codigoReserva);
     List<Reserva> findByVueloId(Long vueloId);
+    List<Reserva> findByPasajeroId(Long pasajeroId);
 
     // IMPORTANTE: Esta consulta cuenta cuántos asientos "ocupados" (confirmados) tiene un vuelo
     @Query("SELECT COUNT(r) FROM Reserva r WHERE r.vuelo.id = :vueloId AND r.estado = 'CONFIRMADA'")

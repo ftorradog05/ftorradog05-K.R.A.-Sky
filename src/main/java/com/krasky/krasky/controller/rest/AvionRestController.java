@@ -42,4 +42,9 @@ public class AvionRestController {
         avionService.deleteAvion(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<AvionDTO> updateAvion(@PathVariable Long id, @Valid @RequestBody AvionDTO avionDTO) {
+        return ResponseEntity.ok(avionService.updateAvion(id, avionDTO));
+    }
 }
