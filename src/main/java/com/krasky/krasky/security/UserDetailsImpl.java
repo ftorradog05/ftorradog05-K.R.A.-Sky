@@ -22,15 +22,15 @@ public class UserDetailsImpl implements UserDetails {
     private String username;
     private String email;
 
-    @JsonIgnore // Evita que la contraseña se envíe en el JSON de respuesta por seguridad
+    @JsonIgnore
     private String password;
 
     private Collection<? extends GrantedAuthority> authorities;
 
-    // Método estático 'build' para convertir tu Entidad Usuario -> UserDetailsImpl
+    // MÉTODO ESTÁTICO CRÍTICO: Convierte tu Usuario de BDD a Usuario de Seguridad
     public static UserDetailsImpl build(Usuario usuario) {
         List<GrantedAuthority> authorities = usuario.getRoles().stream()
-                .map(rol -> new SimpleGrantedAuthority(rol.getNombre().name())) // Convierte Enum a Authority
+                .map(rol -> new SimpleGrantedAuthority(rol.getNombre().name()))
                 .collect(Collectors.toList());
 
         return new UserDetailsImpl(
@@ -46,34 +46,12 @@ public class UserDetailsImpl implements UserDetails {
         return authorities;
     }
 
-    @Override
-    public String getPassword() {
-        return password;
-    }
+    @Override public String getPassword() { return password; }
+    @Override public String getUsername() { return username; }
 
-    @Override
-    public String getUsername() {
-        return username;
-    }
-
-    // Configuración por defecto: la cuenta nunca expira ni se bloquea
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true; // Podrías enlazarlo con usuario.isEnabled() si quisieras
-    }
+    // Configuración para que la cuenta nunca caduque ni se bloquee (Simplicidad)
+    @Override public boolean isAccountNonExpired() { return true; }
+    @Override public boolean isAccountNonLocked() { return true; }
+    @Override public boolean isCredentialsNonExpired() { return true; }
+    @Override public boolean isEnabled() { return true; }
 }

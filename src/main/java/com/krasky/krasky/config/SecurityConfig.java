@@ -20,20 +20,18 @@ public class SecurityConfig {
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
 
-    // 1. BEAN PARA ENCRIPTAR CONTRASEÑAS (IMPRESCINDIBLE)
+    // 1. CODIFICADOR DE CONTRASEÑAS (BCrypt)
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // 2. CONECTAMOS TU SERVICIO DE USUARIOS CON LA SEGURIDAD
+    // 2. PROVEEDOR DE AUTENTICACIÓN
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-
         authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
-
         return authProvider;
     }
 
@@ -43,26 +41,29 @@ public class SecurityConfig {
         return authConfig.getAuthenticationManager();
     }
 
-    // 4. CONFIGURACIÓN DE RUTAS (QUÉ ES PÚBLICO Y QUÉ NO)
+    // 4. CONFIGURACIÓN DE FILTROS Y RUTAS
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // Desactivado para facilitar pruebas (activar en producción)
+                .csrf(csrf -> csrf.disable()) // Desactivar CSRF para simplificar desarrollo
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/css/**", "/js/**", "/images/**").permitAll() // Login y recursos son públicos
-                        .anyRequest().authenticated() // Todo lo demás requiere contraseña
+                        // === RUTAS PÚBLICAS (ACCESO A TODOS) ===
+                        // Importante: "/registro" debe estar aquí para que puedan crearse la cuenta
+                        .requestMatchers("/login", "/registro", "/css/**", "/js/**", "/images/**", "/error", "/webjars/**").permitAll()
+
+                        // === RUTAS PROTEGIDAS ===
+                        .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
-                        .loginPage("/login") // La ruta de tu controlador para el login
-                        .defaultSuccessUrl("/", true) // Si entra bien, va al inicio
+                        .loginPage("/login")        // Tu página de login personalizada
+                        .defaultSuccessUrl("/", true) // Redirigir al inicio al entrar
                         .permitAll()
                 )
                 .logout(logout -> logout
-                        .logoutSuccessUrl("/login?logout") // Al salir vuelve al login
+                        .logoutSuccessUrl("/login?logout") // Redirigir al login al salir
                         .permitAll()
                 );
 
-        // Activamos nuestro proveedor
         http.authenticationProvider(authenticationProvider());
 
         return http.build();
