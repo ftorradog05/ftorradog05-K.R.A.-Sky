@@ -8,8 +8,10 @@ import java.util.Optional;
 
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
+    // ESTE ES EL MÉTODO QUE USA EL LOGIN:
     Optional<Usuario> findByUsername(String username);
-    Optional<Usuario> findByEmail(String email);
-    boolean existsByUsername(String username);
-    boolean existsByEmail(String email);
+
+    // Otros métodos útiles (opcionales)
+    Boolean existsByUsername(String username);
+    Boolean existsByEmail(String email);
 }

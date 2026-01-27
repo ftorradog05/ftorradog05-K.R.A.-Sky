@@ -16,13 +16,15 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private UsuarioRepository usuarioRepository;
 
     @Override
-    @Transactional // Importante para mantener la sesión de BD abierta al cargar roles EAGER/LAZY
+    @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        // Buscamos el usuario en la BD
+        // Buscamos al usuario en la BBDD
         Usuario usuario = usuarioRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con el nombre: " + username));
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
 
-        // Lo convertimos a un objeto que Spring Security entienda
+        // --- CORRECCIÓN CRÍTICA ---
+        // Usamos TU clase UserDetailsImpl para construir el objeto.
+        // Esto devuelve un UserDetailsImpl que el controlador sí puede entender.
         return com.krasky.krasky.security.UserDetailsImpl.build(usuario);
     }
 }
