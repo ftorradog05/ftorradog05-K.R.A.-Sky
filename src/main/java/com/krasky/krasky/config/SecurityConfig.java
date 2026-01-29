@@ -20,13 +20,11 @@ public class SecurityConfig {
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
 
-    // 1. CODIFICADOR DE CONTRASEÑAS (BCrypt)
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // 2. PROVEEDOR DE AUTENTICACIÓN
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -35,32 +33,32 @@ public class SecurityConfig {
         return authProvider;
     }
 
-    // 3. GESTOR DE AUTENTICACIÓN
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
     }
 
-    // 4. CONFIGURACIÓN DE FILTROS Y RUTAS
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // Desactivar CSRF para simplificar desarrollo
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // === RUTAS PÚBLICAS (ACCESO A TODOS) ===
-                        // Importante: "/registro" debe estar aquí para que puedan crearse la cuenta
-                        .requestMatchers("/login", "/registro", "/css/**", "/js/**", "/images/**", "/error", "/webjars/**").permitAll()
+                        // 1. PÚBLICO: Login, registro y estilos
+                        .requestMatchers("/login", "/registro", "/css/**", "/js/**", "/images/**", "/webjars/**", "/error").permitAll()
 
-                        // === RUTAS PROTEGIDAS ===
+                        // 2. SOLO ADMIN: Todo lo que empiece por /web/ (Gestión) o /usuarios/
+                        .requestMatchers("/web/**", "/usuarios/**").hasRole("ADMIN")
+
+                        // 3. RESTO (Clientes y Admin): Autenticado
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
-                        .loginPage("/login")        // Tu página de login personalizada
-                        .defaultSuccessUrl("/", true) // Redirigir al inicio al entrar
+                        .loginPage("/login")
+                        .defaultSuccessUrl("/", true) // Siempre va a la raíz y el controlador decide
                         .permitAll()
                 )
                 .logout(logout -> logout
-                        .logoutSuccessUrl("/login?logout") // Redirigir al login al salir
+                        .logoutSuccessUrl("/login?logout")
                         .permitAll()
                 );
 
