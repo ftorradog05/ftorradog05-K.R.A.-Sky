@@ -157,11 +157,9 @@ Se ha implementado una capa de seguridad completa utilizando **Spring Security 6
 * **Registro de Usuarios:** Permite a nuevos clientes crear su cuenta. Por defecto, se les asigna el rol `ROLE_USER` automáticamente mediante `UsuarioController`.
 * **Encriptación:** Todas las contraseñas se almacenan cifradas utilizando **BCryptPasswordEncoder**.
 
-![Pantalla de Login](doc/img/login_screen.png)
-*(Captura de la pantalla de inicio de sesión con el diseño corporativo)*
+![Pantalla de Login](doc/img/cs1.png)
 
-![Pantalla de Registro](doc/img/registro_screen.png)
-*(Captura del formulario de registro para nuevos usuarios)*
+![Pantalla de Registro](doc/img/cs2.png)
 
 ### 2. Gestión de Sesiones y Roles
 La configuración en [`SecurityConfig.java`](src/main/java/com/krasky/krasky/config/SecurityConfig.java) define las reglas de acceso:
@@ -169,8 +167,7 @@ La configuración en [`SecurityConfig.java`](src/main/java/com/krasky/krasky/con
 * `/` (Portal Cliente): **Accesible para CLIENTE**.
 * **Sidebar Dinámica:** La barra lateral detecta al usuario logueado mediante Thymeleaf Security (`sec:authentication="name"`) y muestra su nombre real junto con un menú desplegable para cerrar sesión de forma segura.
 
-![Sidebar Dinámica](doc/img/sidebar_user.png)
-*(Captura del menú lateral mostrando el usuario conectado y el botón de logout)*
+![Sidebar Dinámica](doc/img/cs3.png)
 
 </details>
 
@@ -182,8 +179,7 @@ Hemos creado una experiencia de usuario totalmente separada. Al iniciar sesión,
 ### 1. Home del Cliente
 Una interfaz visual atractiva tipo "Travel Agency", con fondos inspiradores y tarjetas translúcidas, diseñada exclusivamente para la reserva de vuelos, sin menús de administración.
 
-![Portal del Cliente](doc/img/cliente_home.png)
-*(Captura de la pantalla de bienvenida del cliente con el buscador grande)*
+![Portal del Cliente](doc/img/cs4.png)
 
 ### 2. Buscador de Vuelos
 El cliente dispone de un motor de búsqueda funcional conectado a la base de datos.
@@ -192,8 +188,7 @@ El cliente dispone de un motor de búsqueda funcional conectado a la base de dat
 
 Consulta la lógica de búsqueda personalizada en [`VueloRepository.java`](src/main/java/com/krasky/krasky/repository/VueloRepository.java).
 
-![Resultados de Búsqueda](doc/img/cliente_search_results.png)
-*(Captura de las tarjetas de vuelos resultantes tras realizar una búsqueda)*
+![Resultados de Búsqueda](doc/img/cs5.png)
 
 </details>
 
