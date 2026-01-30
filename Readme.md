@@ -147,11 +147,61 @@ En lugar de devolver trazas de error de Java (Stack Traces), la API devuelve res
 
 </details>
 
+<details>
+<summary><strong>🔐 6. Seguridad y Control de Acceso (Spring Security)</strong></summary>
+
+Se ha implementado una capa de seguridad completa utilizando **Spring Security 6**, garantizando que cada usuario acceda solo a los recursos que le corresponden.
+
+### 1. Autenticación y Registro
+* **Login Personalizado:** Una interfaz limpia y profesional que reemplaza el formulario por defecto de Spring.
+* **Registro de Usuarios:** Permite a nuevos clientes crear su cuenta. Por defecto, se les asigna el rol `ROLE_USER` automáticamente mediante `UsuarioController`.
+* **Encriptación:** Todas las contraseñas se almacenan cifradas utilizando **BCryptPasswordEncoder**.
+
+![Pantalla de Login](doc/img/login_screen.png)
+*(Captura de la pantalla de inicio de sesión con el diseño corporativo)*
+
+![Pantalla de Registro](doc/img/registro_screen.png)
+*(Captura del formulario de registro para nuevos usuarios)*
+
+### 2. Gestión de Sesiones y Roles
+La configuración en [`SecurityConfig.java`](src/main/java/com/krasky/krasky/config/SecurityConfig.java) define las reglas de acceso:
+* `/web/**` (Dashboard y Gestión): **Solo accesible para ADMIN**.
+* `/` (Portal Cliente): **Accesible para CLIENTE**.
+* **Sidebar Dinámica:** La barra lateral detecta al usuario logueado mediante Thymeleaf Security (`sec:authentication="name"`) y muestra su nombre real junto con un menú desplegable para cerrar sesión de forma segura.
+
+![Sidebar Dinámica](doc/img/sidebar_user.png)
+*(Captura del menú lateral mostrando el usuario conectado y el botón de logout)*
+
+</details>
+
+<details>
+<summary><strong>🌍 7. Portal del Cliente y Buscador (UX Diferenciada)</strong></summary>
+
+Hemos creado una experiencia de usuario totalmente separada. Al iniciar sesión, el sistema detecta el rol y, gracias al controlador [`HomeController.java`](src/main/java/com/krasky/krasky/controller/web/HomeController.java), redirige al usuario a su portal exclusivo, bloqueando el acceso al panel administrativo.
+
+### 1. Home del Cliente
+Una interfaz visual atractiva tipo "Travel Agency", con fondos inspiradores y tarjetas translúcidas, diseñada exclusivamente para la reserva de vuelos, sin menús de administración.
+
+![Portal del Cliente](doc/img/cliente_home.png)
+*(Captura de la pantalla de bienvenida del cliente con el buscador grande)*
+
+### 2. Buscador de Vuelos
+El cliente dispone de un motor de búsqueda funcional conectado a la base de datos.
+* **Filtros Flexibles:** Búsqueda por coincidencia parcial en Origen y Destino (ej: "Mad" encuentra "Madrid").
+* **Resultados en Tiempo Real:** Los vuelos disponibles se renderizan en tarjetas elegantes con su precio, horario y ruta.
+
+Consulta la lógica de búsqueda personalizada en [`VueloRepository.java`](src/main/java/com/krasky/krasky/repository/VueloRepository.java).
+
+![Resultados de Búsqueda](doc/img/cliente_search_results.png)
+*(Captura de las tarjetas de vuelos resultantes tras realizar una búsqueda)*
+
+</details>
+
 ---
 
 ## ✅ Tabla de Cumplimiento de Requisitos
 
-Este proyecto cubre el 100% de los requisitos especificados en el enunciado del Proyecto DAM:
+Este proyecto cubre el 100% de los requisitos especificados en el enunciado del Proyecto DAM, añadiendo funcionalidades avanzadas de seguridad y UX:
 
 | Fase PDF | Requisito | Estado | Enlace al Código Principal |
 | :--- | :--- | :---: | :--- |
@@ -162,9 +212,10 @@ Este proyecto cubre el 100% de los requisitos especificados en el enunciado del 
 | **Fase 5** | Servicios (Lógica de Negocio) | ✅ | [`com.krasky.service.impl`](src/main/java/com/krasky/krasky/service/impl) |
 | **Fase 6** | API REST (Controladores y Endpoints) | ✅ | [`com.krasky.controller.rest`](src/main/java/com/krasky/krasky/controller/rest) |
 | **Fase 7** | Interfaz Web (Thymeleaf + Bootstrap) | ✅ | [`templates/`](src/main/resources/templates), [`controller.web`](src/main/java/com/krasky/krasky/controller/web) |
+| **Extra** | Seguridad (Login, Roles, BCrypt) | ✅ | [`SecurityConfig.java`](src/main/java/com/krasky/krasky/config/SecurityConfig.java) |
+| **Extra** | Portal Cliente y Buscador | ✅ | [`cliente_home.html`](src/main/resources/templates/cliente_home.html) |
 | **Extra** | Manejo de Excepciones Global | ✅ | [`GlobalExceptionHandler.java`](src/main/java/com/krasky/krasky/exception/GlobalExceptionHandler.java) |
 | **Extra** | Documentación de Pruebas API | ✅ | [`doc/hoppscotch.pdf`](doc/hoppscotch.pdf) |
-
 ---
 
 ## 🛠️ Tecnologías Utilizadas
