@@ -14,11 +14,14 @@ import java.util.Optional;
 public interface VueloRepository extends JpaRepository<Vuelo, Long> {
     Optional<Vuelo> findByNumeroVuelo(String numeroVuelo);
     List<Vuelo> findByOrigenAndDestino(String origen, String destino);
-
-    // Para saber qué vuelos está usando un avión
     List<Vuelo> findByAvionId(Long avionId);
 
-    // Consulta personalizada para buscar vuelos disponibles (Programados y fecha futura)
     @Query("SELECT v FROM Vuelo v WHERE v.estado = 'PROGRAMADO' AND v.fechaSalida > :ahora")
     List<Vuelo> buscarVuelosDisponibles(@Param("ahora") LocalDateTime ahora);
+
+    // VUELVE A LA VERSIÓN SOLO ORIGEN Y DESTINO
+    @Query("SELECT v FROM Vuelo v WHERE " +
+            "(:origen IS NULL OR LOWER(v.origen) LIKE LOWER(CONCAT('%', :origen, '%'))) AND " +
+            "(:destino IS NULL OR LOWER(v.destino) LIKE LOWER(CONCAT('%', :destino, '%')))")
+    List<Vuelo> buscarVuelos(@Param("origen") String origen, @Param("destino") String destino);
 }
